@@ -1,16 +1,16 @@
-// Variabel Global
+// Global
 let bg;
 let score = 0;
 let maxHealth = 100;
 let health = 100;
 let healthDecrease = 1;
+
 let healthBarWidth = 60;
 let racketBounceRate = 20;
 
 let ballX, ballY;
 let ballSize = 20;
 let ballColor;
-
 let gameScreen = 0;
 
 let wallSpeed = 5;
@@ -28,13 +28,10 @@ let friction = 0.1;
 
 let racketWidth = 100;
 let racketHeight = 10;
-
 let ballSpeedHorizon = 10;
-
 let racketColor;
 let wallColors;
 
-// Array of {x, y, w, h, scored}
 let walls = [];
 
 function preload() {
@@ -43,10 +40,8 @@ function preload() {
 
 function setup() {
   createCanvas(500, 500);
-
   ballX = width / 4;
   ballY = height / 5;
-
   ballColor = color(235, 198, 52);
   racketColor = color(64, 69, 86);
   wallColors = color(64, 69, 86);
@@ -54,19 +49,19 @@ function setup() {
 
 function draw() {
   if (gameScreen === 0) initScreen();
-  else if (gameScreen === 1) gameScreenFunc();
+  else if (gameScreen === 1) gameRunning();
   else if (gameScreen === 2) gameOverScreen();
 }
 
 function initScreen() {
   background(0);
   fill(255);
-  textAlign(CENTER);
   textSize(32);
+  textAlign(CENTER);
   text("Click to Start", width / 2, height / 2);
 }
 
-function gameScreenFunc() {
+function gameRunning() {
   image(bg, 0, 0, width, height);
 
   drawBall();
@@ -75,10 +70,8 @@ function gameScreenFunc() {
   keepInScreen();
   watchRacketBounce();
   applyHorizontalSpeed();
-
   wallAdder();
   wallHandler();
-
   drawHealthBar();
   printScore();
 }
@@ -88,13 +81,12 @@ function gameOverScreen() {
   fill(255);
   textAlign(CENTER);
   textSize(30);
-  text("Game Over", width / 2, height / 2);
+  text("Game Over", width/2, height/2);
   textSize(20);
-  text("Click to Restart", width / 2, height / 2 + 30);
-  text("Score: " + score, width / 2, height / 2 + 60);
+  text("Click to Restart", width/2, height/2 + 30);
+  text("Score: " + score, width/2, height/2 + 60);
 }
 
-// INPUTS
 function mousePressed() {
   if (gameScreen === 0) startGame();
   if (gameScreen === 2) restart();
@@ -103,8 +95,8 @@ function mousePressed() {
 function restart() {
   score = 0;
   health = maxHealth;
-  ballX = width / 4;
-  ballY = height / 5;
+  ballX = width/4;
+  ballY = height/5;
   lastAddTime = 0;
   walls = [];
   gameScreen = 0;
@@ -126,23 +118,22 @@ function applyGravity() {
 }
 
 function makeBounceBottom(surface) {
-  ballY = surface - ballSize / 2;
+  ballY = surface - ballSize/2;
   ballSpeedVert *= -1;
   ballSpeedVert -= ballSpeedVert * friction;
 }
 
 function makeBounceTop(surface) {
-  ballY = surface + ballSize / 2;
+  ballY = surface + ballSize/2;
   ballSpeedVert *= -1;
   ballSpeedVert -= ballSpeedVert * friction;
 }
 
 function keepInScreen() {
-  if (ballY + ballSize / 2 > height) makeBounceBottom(height);
-  if (ballY - ballSize / 2 < 0) makeBounceTop(0);
-
-  if (ballX - ballSize / 2 < 0) makeBounceLeft(0);
-  if (ballX + ballSize / 2 > width) makeBounceRight(width);
+  if (ballY + ballSize/2 > height) makeBounceBottom(height);
+  if (ballY - ballSize/2 < 0) makeBounceTop(0);
+  if (ballX - ballSize/2 < 0) makeBounceLeft(0);
+  if (ballX + ballSize/2 > width) makeBounceRight(width);
 }
 
 function drawRacket() {
@@ -154,11 +145,10 @@ function drawRacket() {
 function watchRacketBounce() {
   let overhead = mouseY - pmouseY;
 
-  if (
-    ballX + ballSize / 2 > mouseX - racketWidth / 2 &&
-    ballX - ballSize / 2 < mouseX + racketWidth / 2
-  ) {
-    if (dist(ballX, ballY, ballX, mouseY) <= ballSize / 2 + abs(overhead)) {
+  if (ballX + ballSize/2 > mouseX - racketWidth/2 &&
+      ballX - ballSize/2 < mouseX + racketWidth/2) {
+
+    if (dist(ballX, ballY, ballX, mouseY) <= ballSize/2 + abs(overhead)) {
       makeBounceBottom(mouseY);
       ballSpeedHorizon = (ballX - mouseX) / 5;
 
@@ -176,13 +166,13 @@ function applyHorizontalSpeed() {
 }
 
 function makeBounceLeft(surface) {
-  ballX = surface + ballSize / 2;
+  ballX = surface + ballSize/2;
   ballSpeedHorizon *= -1;
   ballSpeedHorizon -= ballSpeedHorizon * friction;
 }
 
 function makeBounceRight(surface) {
-  ballX = surface - ballSize / 2;
+  ballX = surface - ballSize/2;
   ballSpeedHorizon *= -1;
   ballSpeedHorizon -= ballSpeedHorizon * friction;
 }
@@ -190,16 +180,9 @@ function makeBounceRight(surface) {
 function wallAdder() {
   if (millis() - lastAddTime > wallInterval) {
     let randHeight = int(random(minGapHeight, maxGapHeight));
-    let randY = round(random(0, height - randHeight));
+    let randY = int(random(0, height - randHeight));
 
-    walls.push({
-      x: width,
-      y: randY,
-      w: wallWidth,
-      h: randHeight,
-      scored: 0
-    });
-
+    walls.push([width, randY, wallWidth, randHeight, 0]);
     lastAddTime = millis();
   }
 }
@@ -209,74 +192,56 @@ function wallHandler() {
     wallMover(i);
     wallDrawer(i);
     watchWallCollision(i);
-    if (walls[i].x + walls[i].w < 0) walls.splice(i, 1);
+    wallRemover(i);
   }
 }
 
 function wallDrawer(i) {
-  let w = walls[i];
-
+  let [x, y, w, h] = walls[i];
   fill(wallColors);
-  rect(w.x, 0, w.w, w.y);
-  rect(w.x, w.y + w.h, w.w, height - (w.y + w.h));
+  rect(x, 0, w, y);
+  rect(x, y + h, w, height - (y + h));
 }
 
 function wallMover(i) {
-  walls[i].x -= wallSpeed;
+  walls[i][0] -= wallSpeed;
+}
+
+function wallRemover(i) {
+  if (walls[i][0] + walls[i][2] < 0) {
+    walls.splice(i, 1);
+  }
 }
 
 function watchWallCollision(i) {
-  let w = walls[i];
+  let [gx, gy, gw, gh, scored] = walls[i];
 
-  let topX = w.x;
-  let topY = 0;
-  let topW = w.w;
-  let topH = w.y;
+  if (collideRect(ballX, ballY, gx, 0, gw, gy)) decreaseHealth();
+  if (collideRect(ballX, ballY, gx, gy+gh, gw, height-(gy+gh))) decreaseHealth();
 
-  let bottomX = w.x;
-  let bottomY = w.y + w.h;
-  let bottomW = w.w;
-  let bottomH = height - bottomY;
-
-  if (
-    ballX + ballSize / 2 > topX &&
-    ballX - ballSize / 2 < topX + topW &&
-    ballY + ballSize / 2 > topY &&
-    ballY - ballSize / 2 < topY + topH
-  ) {
-    decreaseHealth();
-  }
-
-  if (
-    ballX + ballSize / 2 > bottomX &&
-    ballX - ballSize / 2 < bottomX + bottomW &&
-    ballY + ballSize / 2 > bottomY &&
-    ballY - ballSize / 2 < bottomY + bottomH
-  ) {
-    decreaseHealth();
-  }
-
-  if (ballX > w.x + w.w / 2 && w.scored === 0) {
-    w.scored = 1;
+  if (ballX > gx + gw/2 && scored === 0) {
+    walls[i][4] = 1;
     score++;
   }
 }
 
+function collideRect(cx, cy, x, y, w, h) {
+  return (cx + ballSize/2 > x &&
+          cx - ballSize/2 < x+w &&
+          cy + ballSize/2 > y &&
+          cy - ballSize/2 < y+h);
+}
+
 function drawHealthBar() {
   noStroke();
-  fill(236, 240, 241);
-  rect(ballX - healthBarWidth / 2, ballY - 30, healthBarWidth, 5);
+  fill(236);
+  rect(ballX - healthBarWidth/2, ballY - 30, healthBarWidth, 5);
 
   if (health > 60) fill(46, 204, 113);
   else if (health > 30) fill(241, 196, 15);
   else fill(231, 76, 60);
 
-  rect(
-    ballX - healthBarWidth / 2,
-    ballY - 30,
-    healthBarWidth * (health / maxHealth),
-    5
-  );
+  rect(ballX - healthBarWidth/2, ballY - 30, healthBarWidth * (health/maxHealth), 5);
 }
 
 function decreaseHealth() {
