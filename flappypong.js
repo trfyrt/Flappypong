@@ -22,7 +22,6 @@ let lastAddTime = 0;
 let minGapHeight = 200;
 let maxGapHeight = 300;
 let wallWidth = 80;
-let wallColors;
 // Daftar array ini menyimpan data celah antara dinding.
 // (gapWallX, gapWallY, gapWallWidth, gapWallHeight]
 let walls = []; // each wall: [gapWallX, gapWallY, gapWallWidth, gapWallHeight, scoredFlag]
@@ -233,7 +232,8 @@ function wallDrawer(index) {
   // draw actual walls
   rectMode(CORNER);
 
-  fill(wallColors);
+  fill(wallColor);
+
   // top wall with rounded bottom-right/left corners
   rect(gapWallX, 0, gapWallWidth, gapWallY, 0, 0, wallRadius, wallRadius);
   // bottom wall with rounded top-left/top-right corners
