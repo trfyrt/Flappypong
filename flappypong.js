@@ -202,9 +202,11 @@ function wallAdder() {
   if (millis() - lastAddTime > wallInterval) {
     let randHeight = round(random(minGapHeight, maxGapHeight));
     let randY = round(random(0, height - randHeight));
+
+    let randColor = color(random(0,255), random(0,255), random(0,255));
     
     // (gapWallX, gapWallY, gapWallWidth, gapWallHeight)
-    let randWall = [width, randY, wallWidth, randHeight, 0];
+    let randWall = [width, randY, wallWidth, randHeight, 0, randColor];
     walls.push(randWall);
     lastAddTime = millis();
   }
@@ -227,13 +229,9 @@ function wallDrawer(index) {
   let gapWallY = wall[1];
   let gapWallWidth = wall[2];
   let gapWallHeight = wall[3];
+  let wallColor = wall[5];
   // draw actual walls
   rectMode(CORNER);
-
-  red=rand(0,255);
-  green=rand(0,255);
-  blue=rand(0,255);
-  wallColors = color(red, green, blue);
 
   fill(wallColors);
   // top wall with rounded bottom-right/left corners
