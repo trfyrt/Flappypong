@@ -46,7 +46,6 @@ function setup() {
   createCanvas(500, 500);
   ballColor = color(230, 222, 94);
   racketColor = color(64, 69, 86);
-  wallColors = color(64, 69, 86);
   ballX = width/4;  // Mengatur posisi bola di sumbu x
   ballY = height/5; // Mengatur posisi bola di sumbu y
   lastAddTime = millis();
@@ -230,6 +229,12 @@ function wallDrawer(index) {
   let gapWallHeight = wall[3];
   // draw actual walls
   rectMode(CORNER);
+
+  red=rand(0,255);
+  green=rand(0,255);
+  blue=rand(0,255);
+  wallColors = color(red, green, blue);
+
   fill(wallColors);
   // top wall with rounded bottom-right/left corners
   rect(gapWallX, 0, gapWallWidth, gapWallY, 0, 0, wallRadius, wallRadius);
